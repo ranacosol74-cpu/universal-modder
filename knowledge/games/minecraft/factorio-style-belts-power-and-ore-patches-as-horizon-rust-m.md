@@ -24,11 +24,12 @@ tags: ["horizon", "rust", "webassembly", "wasm-component", "wit", "server-mod", 
 > (`.hmod` zips) instead of Java bytecode. This project added a slice of Factorio to it: conveyor belts that
 > carry the block on top of them, small electric poles, steam engines (water + coal → 900 kW), electric mining
 > drills and furnaces that share one power network and all slow down together when supply is short, plus
-> surface ore patches on a 48×48 cell grid like Factorio's. It is two `.hmod` files: a code-free **content
-> mod** (five new blocks, three items, recipes, loot, en/ru names, 16×16 textures) and a **server mod** (the
-> rules). Everything passes Horizon's own sandbox test runner and `cargo horizon-mod check`, and every content
-> JSON decodes with the game's own `horizon-assets` parsers; it has **not** yet been seen in the running game
-> (the build machine has no Vulkan GPU, and the human chose to test on their gaming PC).
+> surface ore patches on a 48×48 cell grid (a simplification: Factorio places patches with spot noise). It is
+> two `.hmod` files: a code-free **content mod** (five new blocks, three items, recipes, loot, en/ru names,
+> 16×16 textures) and a **server mod** (the rules). Everything passes Horizon's own sandbox test runner and
+> `cargo horizon-mod check`, and every content JSON decodes with the game's own `horizon-assets` parsers; it
+> has **not** yet been seen in the running game (the build machine has no Vulkan GPU, and the human chose to
+> test on their gaming PC).
 
 ## Setup
 
@@ -47,7 +48,13 @@ tags: ["horizon", "rust", "webassembly", "wasm-component", "wit", "server-mod", 
   `%APPDATA%\horizon-launcher`, game home `%APPDATA%\horizon` (`horizon-mods\`, `horizon-mods.txt`,
   `options.txt`). `horizon-launcher prepare --download` fetched the 26.3 resources from Mojang after the human
   signed in to a Microsoft account that owns Java Edition (the launcher checks ownership; nothing was bypassed).
+  Horizon itself ships no Minecraft code, assets or data: it prepares its files from your own copy, and those
+  files are never shared (its README).
 - Python 3.14 for `tools/make_content.py`, which writes the whole content mod (JSON + PNG textures).
+- Multiplayer: the server mod changes the world for everyone on the game that runs it (single player's own
+  server, a LAN host or a dedicated server; "Where they run" in `docs/mods.md`), and ore patches carve the
+  ground near players. So it's for your own worlds, or a LAN world or Horizon server you host for friends who
+  agreed to it.
 
 ## Route and why
 
@@ -65,13 +72,16 @@ logic). The server mod also understands vanilla stand-ins (glazed terracotta = b
 mod is off.
 
 Rejected: patching the Horizon client itself (a fork no player would install, and the project exists to show
-the mod API), and a Java/Fabric mod (Horizon loads no Java).
+the mod API; Horizon's native mods, compile-time patches of its source made with `horizon-mixins` and run
+outside the sandbox, are the supported form of that), and a Java/Fabric mod (Horizon loads no Java).
 
 ## How the game works (what we had to learn)
 
 - **Packaging.** `.hmod` = zip of `horizon-mod.toml` + `mod.wasm` (+ `assets/`, `data/`). A content mod with
-  no `Cargo.toml` is packed by `cargo horizon-mod build` in its folder; `check` validates both kinds without a
-  trial run and prints the API level the mod needs.
+  no `Cargo.toml` is packed by `cargo horizon-mod build` in its folder; `check` validates both kinds and prints
+  the API level the mod needs. A mod with code also gets a trial run in the sandbox (40 ticks, frames, a chat
+  line and each command; for a server mod, a player joins, chats and leaves); a content-only mod has nothing
+  to run.
 - **Content mods** declare blocks in `data/<id>/horizon/block/<name>.json` as `{"template": "minecraft:…",
   "properties": {…}, "item": true}` and items in `data/<id>/horizon/item/`. The block keeps the template's
   state properties and behaviour: a `minecraft:white_glazed_terracotta` template gives a `facing` property
@@ -85,7 +95,7 @@ the mod API), and a Java/Fabric mod (Horizon loads no Java).
   `players` (`online()` with position/dimension/game mode, `tell`, `broadcast`: 8 messages per call), `world`
   (`get-block`/`get-biome` of loaded chunks, `set-blocks` up to 4096 per call, applied like `/setblock` after
   the call and before the dimension's next tick). Exports (`server-events`): `tick`, `command` with typed
-  arguments (`Argument::word(...).optional()`, `Argument::integer(name, min, max)`), `block-placed`,
+  arguments (`Argument::word(...).optional()`, `Argument::integer(name, Some(min), Some(max))`), `block-placed`,
   `block-broken`. There is no access to inventories, item entities, entities in general, the world seed or
   worldgen, and a per-call time budget applies.
 - **Block state strings** are vanilla's: `minecraft:oak_log[axis=y]`. Parse the id and `[k=v,…]` yourself.
@@ -125,16 +135,18 @@ the mod API), and a Java/Fabric mod (Horizon loads no Java).
    world, `/factory help`. For iteration: launch with `--dev-mod <path>` and the game reloads the file when it
    changes.
 
-Mechanics as built (so the next agent can judge the balance): belts move the block above them one cell every
-8 ticks in the direction opposite to their `facing` (Gotcha 9); poles wire to poles within 7 blocks and supply
-machines within 2; a steam engine needs water on any of its 6 sides and fuel on top (coal block 36 MJ, coal
-ore 4 MJ, logs/planks 2 MJ), gives 900 kW and burns fuel in proportion to load; drill 90 kW, one ore block
-onto an adjacent belt every 3 s; furnace 180 kW, ore in from a belt pointing at it, metal block out onto
-another adjacent belt after 5 s; satisfaction = min(1, supply/demand) scales every machine's progress. Ore:
-the overworld is cut into 48×48 cells, ~35 % hold a patch (iron, copper, coal, rare gold) chosen by a hash of
-the cell coordinates; the four cells around the origin always hold iron, coal and copper; a patch surfaces
-(ground blocks swapped for ore, 3 deep at the centre) when a player is within 2 cells and its chunks are
-loaded, one patch per work tick; surfaced cells are remembered in `storage`.
+Mechanics as built (so the next agent can judge the balance): belts move the block above them one cell every 8
+ticks in the direction opposite to their `facing` (Gotcha 9); poles wire to poles within 7 blocks and supply
+machines within 2; a steam engine needs water on any of its 6 sides and fuel on top (coal block 36 MJ, coal ore
+4 MJ, logs/planks 2 MJ), gives 900 kW and burns fuel in proportion to load; drill 90 kW, one ore block onto an
+adjacent belt every 3 s; furnace 180 kW, ore in from a belt pointing at it, metal block out onto another
+adjacent belt after 5 s; satisfaction = min(1, supply/demand) scales every machine's progress. Ore: the
+overworld is cut into 48×48 cells, ~35 % hold a patch (iron, copper, coal, rare gold) chosen by a hash of the
+cell coordinates (Factorio instead places patches with spot noise: candidate spots about 45 tiles apart in
+1024-tile regions, richer patches farther out, `resource_autoplace_all_patches` in its
+`core/prototypes/noise-functions.lua`); the four cells around the origin always hold iron, coal and copper; a
+patch surfaces (ground blocks swapped for ore, 3 deep at the centre) when a player is within 2 cells and its
+chunks are loaded, one patch per work tick; surfaced cells are remembered in `storage`.
 
 ## Verification
 
@@ -167,10 +179,13 @@ loaded, one patch per work tick; surfaced cells are remembered in `storage`.
 4. **`dlltool: CreateProcess` error while linking `cargo-horizon-mod`.** **Cause:** rustup's bundled
    self-contained gnu linker has no `as.exe`. **Fix:** a full mingw-w64 (WinLibs) on PATH, or use the msvc
    toolchain.
-5. **Sandbox test: `set-blocks` from the mod are not visible until the next step.** Expectations one step too
-   early fail although the game would be fine. **Cause:** the runner snapshots the world per step and applies
-   the mod's writes after the step, mirroring the real "before the next tick" rule. **Fix:** expect results in
-   the step after the ticks that produced them; write scripts as one work tick per step.
+5. **Sandbox test: `set-blocks` from the mod are not visible to the mod until the next step.** Expectations one
+   step too early fail although the game would be fine. **Cause:** at the start of each step the runner lends
+   the mod a copy of the script's world and applies the mod's writes only after all of the step's ticks
+   (`crates/horizon-mods/src/testing.rs`), so a second work tick in the same step reads the blocks as they were
+   before the first; the game applies writes before the dimension's next tick. **Fix:** write scripts as one
+   work tick per step. `expect.blocks` is checked after the step's writes are made, so it sees that step's
+   changes.
 6. **Sandbox test: `place = {…}` does not put the block in the world.** The mod registered the block but the
    simulation saw air. **Cause:** `place`/`break` only fire the hooks; the script owns the world. **Fix:**
    list the same block in that step's `blocks` as well.
