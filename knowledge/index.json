@@ -2246,6 +2246,43 @@
   ]
  },
  {
+  "path": "games/dead-cells/decoupled-timed-door-scaling-environmental-rally-immunity-an.md",
+  "kind": "game",
+  "title": "Decoupled Timed Door Scaling, Environmental Rally Immunity, and HashLink State Storage in Dead Cells",
+  "game": "Dead Cells",
+  "games_also": [],
+  "game_version": "GOG v35 (clean release), Windows build (deadcells.exe) run under Wine 9.0 on Linux",
+  "platform": "proton",
+  "engine": "haxe",
+  "route": "managed-patch",
+  "tools": [
+   "hlbc",
+   "python3",
+   "Wine 9.0"
+  ],
+  "anti_cheat": "none (single-player); keep the patched exe out of the Daily Challenge, whose scores go on the leaderboards",
+  "status": "working",
+  "agents": [
+   "Antigravity (model not recorded)"
+  ],
+  "humans": [],
+  "date": "2026-10-28",
+  "links": [
+   "https://github.com/Gui-Yom/hlbc",
+   "https://github.com/HaxeFoundation/hashlink"
+  ],
+  "tags": [
+   "haxe",
+   "heaps",
+   "hashlink",
+   "bytecode",
+   "timed-doors",
+   "rally-mechanic",
+   "state-storage",
+   "dead-cells"
+  ]
+ },
+ {
   "path": "games/dead-cells/libgdx-rebuild-from-res-pak.md",
   "kind": "game",
   "title": "Rebuilding Dead Cells' core loop in libGDX, reading the game's own res.pak at runtime",
@@ -4956,6 +4993,145 @@
   ]
  },
  {
+  "path": "games/middle-earth-shadow-of-war/map-import-shadow-of-mordor-udun-as-a-new-region.md",
+  "kind": "game",
+  "title": "Map import: Shadow of Mordor's Ud\u00fbn as a playable new region in Shadow of War",
+  "game": "Middle-earth: Shadow of War",
+  "games_also": [
+   "Middle-earth: Shadow of Mordor"
+  ],
+  "game_version": "Shadow of War Steam build 3095001 (exe 1.0.8874.0, public branch, unchanged since 2018-09-05), Windows 10 22H2; Shadow of Mordor Steam copy (public branch, build 7348332) as the map source",
+  "platform": "windows",
+  "engine": "unknown",
+  "route": "data",
+  "tools": [
+   "Python 3.12 + numpy/Pillow (own SoM/SoW format readers, converters and writers)",
+   "C# GADB reader-writer (PowerShell Add-Type)",
+   "Recast v1.6.0 (recastnavigation, own CLI)",
+   "TagTools (Havok 2016 TAG0 reader/writer, ported to Python 3)",
+   "QuickBMS + aluigi shadow_of_mordor.bms 0.4",
+   "Ghidra 12.1.4 (headless, analysis only) + Temurin JDK 21",
+   "w64devkit GCC 16.2 (trace plugin, Recast CLI)",
+   "Shadow of War Dll Loader (Nexus 99, loads the diagnostic plugin)",
+   "texconv (DirectXTex)",
+   "Blender 4.2.3 (headless previews)"
+  ],
+  "anti_cheat": "none; single-player only. The mod is data (an extra .arch06 + game.gamedb), the exe file is untouched (SteamStub/Denuvo untouched). The diagnostic trace plugin hooks code in memory and is only installed for tests. Every test ran offline through the offline-mode DLL (never signed in to WB).",
+  "status": "working",
+  "agents": [
+   "Claude Code (Opus 5.5)"
+  ],
+  "humans": [
+   "DeimozZarco"
+  ],
+  "date": "2026-10-29",
+  "links": [
+   "knowledge/games/middle-earth-shadow-of-war/map-import-toolkit-formats-and-tools.md",
+   "knowledge/games/middle-earth-shadow-of-war/offline-mode-and-local-garrison.md",
+   "knowledge/games/middle-earth-shadow-of-war/goblin-tribe-a-new-nemesis-tribe-via-game-gamedb.md",
+   "knowledge/games/middle-earth-shadow-of-war/save-format-decrypt-and-collectible-quests.md",
+   "https://github.com/recastnavigation/recastnavigation",
+   "https://github.com/blueskythlikesclouds/TagTools",
+   "https://www.nexusmods.com/middleearthshadowofwar/mods/99"
+  ],
+  "tags": [
+   "map-import",
+   "total-conversion",
+   "mashup",
+   "new-region",
+   "world-map",
+   "fast-travel",
+   "region-map",
+   "minimap",
+   "prefab-conversion",
+   "material-conversion",
+   "texture-conversion",
+   "havok",
+   "hknp",
+   "collision",
+   "navmesh",
+   "recast",
+   "hkai",
+   "parkour",
+   "terrain",
+   "army-screen",
+   "nemesis",
+   "faction",
+   "ai-spawns",
+   "quests",
+   "lua",
+   "trace-plugin",
+   "lithtech",
+   "firebird"
+  ]
+ },
+ {
+  "path": "games/middle-earth-shadow-of-war/map-import-toolkit-formats-and-tools.md",
+  "kind": "game",
+  "title": "Map import toolkit: Shadow of War / Shadow of Mordor file formats and the tools we wrote",
+  "game": "Middle-earth: Shadow of War",
+  "games_also": [
+   "Middle-earth: Shadow of Mordor"
+  ],
+  "game_version": "Shadow of War Steam build 3095001 (exe 1.0.8874.0), Windows 10 22H2; Shadow of Mordor Steam copy as the source",
+  "platform": "windows",
+  "engine": "unknown",
+  "route": "data",
+  "tools": [
+   "Python 3.12 + numpy/Pillow",
+   "C# 5 GADB reader-writer via PowerShell Add-Type",
+   "Recast v1.6.0 core in an own CLI (w64devkit g++)",
+   "TagTools (TAG0 reader/writer, Python 3 port)",
+   "QuickBMS + aluigi shadow_of_mordor.bms 0.4",
+   "texconv (DirectXTex)",
+   "Ghidra 12.1.4 (analysis only)",
+   "w64devkit GCC 16.2 (trace plugin)",
+   "Blender 4.2.3 (headless previews)"
+  ],
+  "anti_cheat": "none; single-player, offline. Tools only read the user's own game files and write a mod archive + database; the exe file is never modified.",
+  "status": "working",
+  "agents": [
+   "Claude Code (Opus 5.5)"
+  ],
+  "humans": [
+   "DeimozZarco"
+  ],
+  "date": "2026-10-29",
+  "links": [
+   "knowledge/games/middle-earth-shadow-of-war/map-import-shadow-of-mordor-udun-as-a-new-region.md",
+   "knowledge/games/middle-earth-shadow-of-war/goblin-tribe-a-new-nemesis-tribe-via-game-gamedb.md",
+   "https://github.com/recastnavigation/recastnavigation",
+   "https://github.com/blueskythlikesclouds/TagTools"
+  ],
+  "tags": [
+   "toolkit",
+   "file-formats",
+   "ltar",
+   "bundles",
+   "objres",
+   "gadb",
+   "prfb",
+   "ltmi",
+   "texr",
+   "wdsc",
+   "terrain",
+   "havok",
+   "tag0",
+   "hknp",
+   "hkai",
+   "recast",
+   "cadb",
+   "volm",
+   "uiwd",
+   "uis",
+   "kit-copy",
+   "trace-plugin",
+   "map-import",
+   "lithtech",
+   "firebird"
+  ]
+ },
+ {
   "path": "games/middle-earth-shadow-of-war/offline-mode-and-local-garrison.md",
   "kind": "game",
   "title": "Offline mode and local Garrison: a winhttp stand-in for WB's Hydra server",
@@ -7292,6 +7468,151 @@
   ]
  },
  {
+  "path": "games/skyrim-special-edition/cbbe-mesh-osd-tri-isolated-bodyslide-validation.md",
+  "kind": "game",
+  "title": "CBBE OSD/TRI validation, isolated BodySlide builds, and a tested morph/physics baseline",
+  "game": "Skyrim Special Edition",
+  "games_also": [],
+  "game_version": "Runtime test: 1.6.1170.0 with SKSE 2.2.6; separate inspected Steam executable metadata: 1.7.104.0",
+  "platform": "windows",
+  "engine": "creation",
+  "route": "asset-only",
+  "tools": [
+   "BodySlide/Outfit Studio 5.8.1.0",
+   "MO2 2.5.2",
+   "Node.js readers",
+   "RaceMenu AE 0.4.20.0",
+   "CBPC 1.6.2",
+   "local CBBE directory labelled 2.0.3",
+   "local XPMSSE directory labelled 5.06"
+  ],
+  "anti_cheat": "Single-player research profiles only; no online client, anti-cheat bypass, DRM removal or ownership-check change involved",
+  "status": "working",
+  "agents": [
+   "OpenCode (GPT-6.1 Sol)",
+   "OpenCode (GPT-6.1 Sol Fast)",
+   "OpenCode (GPT-6 Astra Fast)"
+  ],
+  "humans": [
+   "Kokuru"
+  ],
+  "date": "2026-10-28",
+  "links": [
+   "https://github.com/ousnius/BodySlide-and-Outfit-Studio/tree/v5.8.1",
+   "https://github.com/ousnius/BodySlide-and-Outfit-Studio/blob/38139d40f74bc675a093db705fe7f4c0151d01ec/src/components/DiffData.cpp",
+   "https://github.com/ousnius/BodySlide-and-Outfit-Studio/blob/38139d40f74bc675a093db705fe7f4c0151d01ec/src/files/TriFile.cpp",
+   "https://github.com/ousnius/nifly/blob/6cb15fb5da71527b33cea8ff7913be8790e1c633/src/Skin.cpp",
+   "https://github.com/ianpatt/skse64/blob/25b72352adb6543fa6d0bd3795780672b2e238e0/skse64/PluginAPI.h",
+   "https://github.com/ianpatt/skse64/blob/25b72352adb6543fa6d0bd3795780672b2e238e0/skse64/PluginManager.cpp",
+   "https://github.com/ousnius/BodySlide-and-Outfit-Studio/wiki/Conversion-references-and-using-them",
+   "https://github.com/DaymareOn/hdtSMP64/tree/2215ec3ba09adf0843a3291ed0437a6ca6d385e2",
+   "https://github.com/Acro748/CBPCSSE/tree/fabd56ce8f8ac10cde17325f0bd61ecc8cbcda20"
+  ],
+  "tags": [
+   "cbbe",
+   "bodyslide",
+   "osd",
+   "tri",
+   "nif",
+   "morphs",
+   "isolated-build",
+   "mo2",
+   "skse",
+   "physics-routing",
+   "verification"
+  ]
+ },
+ {
+  "path": "games/skyrim-special-edition/loot-detection-spell-papyrus-call-costs-and-lights.md",
+  "kind": "game",
+  "title": "A fast loot-detection spell with SKSE and po3: Papyrus call costs, threads, and lights on items",
+  "game": "Skyrim Special Edition",
+  "games_also": [],
+  "game_version": "Skyrim SE 1.7.104 (Steam 489830), SKSE64 2.3.1, powerofthree's Papyrus Extender 6.5.2",
+  "platform": "windows",
+  "engine": "creation",
+  "route": "loader-api",
+  "tools": [
+   "SKSE64 2.3.1",
+   "powerofthree's Papyrus Extender 6.5.2",
+   "Papyrus Compiler (Creation Kit)",
+   "Mod Organizer 2",
+   "own Python plugin and NIF writers"
+  ],
+  "anti_cheat": "none found by um scan",
+  "status": "working",
+  "agents": [
+   "Claude Code (Opus 5.5)"
+  ],
+  "humans": [],
+  "date": "2026-10-26",
+  "links": [
+   "https://github.com/ianpatt/skse64",
+   "https://github.com/powerof3/PapyrusExtenderSSE",
+   "https://en.uesp.net/wiki/Skyrim:Detect_Life",
+   "https://ck.uesp.net/wiki/Category:Non-delayed_Native_Function",
+   "https://ck.uesp.net/wiki/Papyrus_Compiler_Reference"
+  ],
+  "tags": [
+   "papyrus",
+   "skse",
+   "po3",
+   "performance",
+   "threading",
+   "art-object",
+   "visual-effect",
+   "effect-shader",
+   "nif",
+   "spell"
+  ]
+ },
+ {
+  "path": "games/skyrim-special-edition/posed-corpses-with-gear-on-them-and-a-script-placed-museum-d.md",
+  "kind": "game",
+  "title": "Posed corpses with gear on them, and a script-placed museum display, from generated plugin records",
+  "game": "Skyrim Special Edition",
+  "games_also": [],
+  "game_version": "1.7.104 (Steam), Creation Kit 1.7.99 for placement only, SKSE64 2.3.1, powerofthree's Papyrus Extender 6.5.2",
+  "platform": "windows",
+  "engine": "creation",
+  "route": "data",
+  "tools": [
+   "Python plugin writer (own)",
+   "own NIF reader and patcher (Python)",
+   "Creation Kit (layout plugins only)",
+   "Papyrus Compiler (Creation Kit)",
+   "Mod Organizer 2"
+  ],
+  "anti_cheat": "none (single-player)",
+  "status": "working",
+  "agents": [
+   "Claude Code (Opus 5.5)"
+  ],
+  "humans": [],
+  "date": "2026-10-29",
+  "links": [
+   "https://en.uesp.net/wiki/Skyrim:Under_Saarthal",
+   "https://en.uesp.net/wiki/Lore:Saarthal"
+  ],
+  "tags": [
+   "corpses",
+   "ragdoll",
+   "havok",
+   "nif",
+   "collision",
+   "mannequin",
+   "script-placed",
+   "papyrus",
+   "crosshair",
+   "dragon-font",
+   "message-box",
+   "dialogue",
+   "voice-files",
+   "copied-records",
+   "compatibility"
+  ]
+ },
+ {
   "path": "games/skyrim-special-edition/rebuilding-a-cut-gatekeeper-with-generated-plugin-records-di.md",
   "kind": "game",
   "title": "Rebuilding a cut gatekeeper with generated plugin records: dialogue branches, shared voice lines, force-greets",
@@ -9069,6 +9390,64 @@
    "jotunn",
    "custom-piece",
    "harmony"
+  ]
+ },
+ {
+  "path": "games/vampire-the-masquerade-bloodlines/longhair-outfit-proportions-from-skyrim-cbbe-3ba-source-data.md",
+  "kind": "game",
+  "title": "Bloodlines MDL2531 outfit transfer and native secondary motion: bind frames, pose provenance and receiver flags",
+  "game": "Vampire: The Masquerade - Bloodlines",
+  "games_also": [
+   "The Elder Scrolls V: Skyrim Special Edition"
+  ],
+  "game_version": "Local Version.inf 1.2; enabled Unofficial Patch Plus metadata 11.5.46.0; Fashionista portable MO2 profile",
+  "platform": "windows",
+  "engine": "source",
+  "route": "native-hook",
+  "tools": [
+   "Blender 4.5.15 LTS",
+   "BodySlide/Outfit Studio 5.8.1",
+   "SourceIO MDL2531/VTX107 readers",
+   "MO2 2.5.2",
+   "Zig 0.13.0 (x86)",
+   "Bullet 3.25",
+   "Python/NumPy",
+   "srctools"
+  ],
+  "anti_cheat": "Single-player Bloodlines instance; no anti-cheat signature found in bounded local scan, no multiplayer interaction or protection/ownership bypass",
+  "status": "in-progress",
+  "agents": [
+   "OpenCode (GPT-6.1 Sol)",
+   "OpenCode (GPT-6.1 Sol Fast)",
+   "OpenCode (GPT-6 Astra)",
+   "OpenCode (GPT-6 Astra Fast)"
+  ],
+  "humans": [
+   "Kokuru"
+  ],
+  "date": "2026-10-28",
+  "links": [
+   "https://github.com/REDxEYE/SourceIO/tree/fe24260b97ac03b899d9b5d4f0fd7b34772f3647",
+   "https://github.com/ousnius/BodySlide-and-Outfit-Studio/blob/59fca3a4787153e7349aa0fb01c716235f9f9b27/src/components/Automorph.cpp",
+   "https://github.com/ousnius/BodySlide-and-Outfit-Studio/wiki/Conversion-references-and-using-them",
+   "https://github.com/ousnius/BodySlide-and-Outfit-Studio/wiki/Making-a-new-conversion-reference-%28external-tools%29",
+   "https://github.com/ZeqMacaw/Crowbar/blob/0d46f3b6a694b74453db407c72c12a9685d8eb1d/Crowbar/Core/GameModel/SourceModel2531/SourceMdlFile2531.vb",
+   "https://github.com/c6-dev/vtmb-tweaks/blob/5d9ea803a35261fb2ad120737d8d2419ce893e72/vtmb-tweaks/dllmain.cpp",
+   "https://github.com/DaymareOn/hdtSMP64/tree/2215ec3ba09adf0843a3291ed0437a6ca6d385e2",
+   "https://github.com/bulletphysics/bullet3/tree/2c204c49e56ed15ec5fcfa71d199ab6d6570b3f5"
+  ],
+  "tags": [
+   "mdl2531",
+   "vtx107",
+   "source",
+   "body-proportions",
+   "conversion-carrier",
+   "animation",
+   "secondary-motion",
+   "native-hook",
+   "pose-provenance",
+   "mo2",
+   "verification"
   ]
  },
  {
